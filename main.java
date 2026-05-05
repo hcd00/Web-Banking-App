@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class main {
@@ -6,11 +7,10 @@ public class main {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
 
-        Account[] user = new Account[10]; // max 10 users
-        int userCount = 0;
+        ArrayList<Account> user = new ArrayList<Account>();
 
         OUTER:
-        while (true) {
+        while (true) {  
             System.out.println("\n1. Create Account");
             System.out.println("2. Login");
             System.out.println("3. Exit");
@@ -23,16 +23,24 @@ public class main {
                     break OUTER;
                 case 1: {
                     //create account
-                    if (userCount >= user.length) {
-                        System.out.println("User limit reached.");
-                        continue;
-                    }
                     System.out.print("Enter new account number: ");
                     String accountNumber = scan.nextLine();
-                    System.out.print("Set 4 digit PIN: ");
-                    String pin = scan.nextLine();
-                    user[userCount] = new Account(accountNumber, pin);
-                    userCount++;
+                    String pin;
+                    while (true) {
+                        System.out.print("Set 4 digit PIN: ");
+                        pin = scan.nextLine();
+                        if (pin.length() != 4) {
+                            System.out.println("PIN must be exactly 4 digits.");
+                            continue;
+                        }
+                        try {
+                            Integer.parseInt(pin);
+                            break;
+                        } catch (NumberFormatException e) {
+                            System.out.println("PIN must contain only digits.");
+                        }
+                    }
+                    user.add(new Account(accountNumber, pin));
                     System.out.println("Account created.");
                     break;
                 }
@@ -41,9 +49,9 @@ public class main {
                     System.out.print("Enter account number: ");
                     String accountNumber = scan.nextLine();
                     Account currentAccount = null;
-                    for (int i = 0; i < userCount; i++) { //go through existing accounts and find if the user input exists
-                        if (user[i].accountNumber.equals(accountNumber)) {
-                            currentAccount = user[i];
+                    for (Account acc : user) {
+                        if (acc.accountNumber.equals(accountNumber)) {
+                            currentAccount = acc;
                             break;
                         }
                     }
